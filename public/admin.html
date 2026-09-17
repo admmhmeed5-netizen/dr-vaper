@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة التحكم — dr.vaper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1B1A;
+    --ink-soft:#4B5D5B;
+    --line:#DCE5E3;
+    --teal:#0C8C7D;
+    --teal-deep:#075E54;
+    --coral:#F0664F;
+    --amber:#E7A339;
+    --surface:#FFFFFF;
+    --surface-2:#EEF3F2;
+    --bg:#F4F7F6;
+    --font-display:'Almarai','Cairo',sans-serif;
+    --font-body:'Cairo','Almarai',sans-serif;
+    --radius-lg:22px;
+    --radius-md:16px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); direction:rtl;
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:var(--font-display);}
+
+  /* ---------- LOGIN SCREEN ---------- */
+  #login-screen{
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .login-card{
+    width:100%; max-width:360px; background:var(--surface);
+    border-radius:var(--radius-lg); padding:32px 26px;
+    box-shadow:0 10px 40px rgba(9,25,35,.12);
+    text-align:center;
+  }
+  .login-logo{
+    width:56px; height:56px; border-radius:16px; margin:0 auto 16px;
+    background:var(--teal-deep); display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; font-size:22px;
+  }
+  .login-card h1{font-size:19px; margin:0 0 4px; color:var(--ink);}
+  .login-card p{font-size:13px; color:var(--ink-soft); margin:0 0 22px;}
+  .login-field{margin-bottom:14px; text-align:right;}
+  .login-field label{display:block; font-size:13px; font-weight:700; margin-bottom:6px;}
+  .login-field input{
+    width:100%; padding:13px 14px; border-radius:12px;
+    border:1.5px solid var(--line); font-family:inherit; font-size:14px;
+    outline:none; background:#fff; color:var(--ink);
+  }
+  .login-field input:focus{border-color:var(--teal);}
+  .login-error{
+    color:var(--coral); font-size:12.5px; margin:-6px 0 12px; display:none; text-align:right;
+  }
+  .login-btn{
+    width:100%; padding:13px; border:none; border-radius:999px;
+    background:var(--teal-deep); color:#fff; font-family:inherit;
+    font-size:15px; font-weight:800; cursor:pointer;
+  }
+  .login-btn:disabled{opacity:.6; cursor:default;}
+
+  /* ---------- DASHBOARD ---------- */
+  #dashboard{display:none; min-height:100vh; flex-direction:column;}
+  .admin-top{
+    background:var(--teal-deep); color:#fff;
+    padding:16px 20px; display:flex; align-items:center; gap:12px;
+    flex-wrap:wrap;
+  }
+  .admin-top h1{font-size:17px; margin:0; flex:1;}
+  .admin-top-actions{display:flex; gap:8px;}
+  .top-btn{
+    background:rgba(255,255,255,.15); border:none; color:#fff;
+    padding:9px 14px; border-radius:999px; font-family:inherit;
+    font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px;
+  }
+  .top-btn svg{width:16px; height:16px;}
+  .admin-wrap{max-width:900px; width:100%; margin:0 auto; padding:20px; flex:1;}
+  .summary-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+    gap:12px; margin-bottom:20px;
+  }
+  .summary-card{
+    background:var(--surface); border-radius:var(--radius-md);
+    padding:16px; text-align:center; box-shadow:0 2px 10px rgba(9,25,35,.05);
+  }
+  .summary-card .v{font-size:22px; font-weight:800; color:var(--teal-deep);}
+  .summary-card .l{font-size:12px; color:var(--ink-soft); margin-top:4px;}
+
+  .toolbar{
+    display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;
+  }
+  .toolbar input[type=search]{
+    flex:1; min-width:180px; padding:11px 14px; border-radius:999px;
+    border:1.5px solid var(--line); font-family:inherit; font-size:13px; outline:none;
+  }
+  .toolbar input[type=search]:focus{border-color:var(--teal);}
+  .toolbar select{
+    padding:11px 14px; border-radius:999px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:13px; background:#fff; color:var(--ink); outline:none;
+  }
+
+  .order-list{display:flex; flex-direction:column; gap:12px;}
+  .empty-state{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:60px 20px; gap:10px; color:var(--ink-soft); text-align:center;
+  }
+  .empty-state svg{width:52px; height:52px; opacity:.35;}
+
+  .order-card{
+    background:var(--surface); border-radius:var(--radius-md);
+    padding:16px; box-shadow:0 2px 10px rgba(9,25,35,.05);
+    border:1px solid var(--line);
+  }
+  .order-card-head{
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    margin-bottom:10px; padding-bottom:10px; border-bottom:1px dashed var(--line);
+    flex-wrap:wrap;
+  }
+  .order-id{font-size:13px; font-weight:800; color:var(--teal-deep);}
+  .order-date{font-size:11.5px; color:var(--ink-soft);}
+  .status-badge{
+    font-size:11.5px; font-weight:800; padding:4px 12px; border-radius:999px;
+    background:var(--surface-2); color:var(--ink);
+  }
+  .status-badge.new{background:#FCEFE5; color:var(--amber);}
+  .status-badge.processing{background:#E5F0FC; color:#1D6FBF;}
+  .status-badge.delivered{background:#E6F6F1; color:var(--teal-deep);}
+  .status-badge.cancelled{background:#FBE9E7; color:var(--coral);}
+
+  .order-body{display:grid; grid-template-columns:1fr 1fr; gap:6px 16px;}
+  @media(max-width:520px){.order-body{grid-template-columns:1fr;}}
+  .info-row{font-size:13px; display:flex; gap:6px;}
+  .info-row .k{color:var(--ink-soft); font-weight:700; flex-shrink:0;}
+  .info-row .v{word-break:break-word;}
+
+  .order-items{
+    margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);
+  }
+  .item-line{
+    display:flex; justify-content:space-between; font-size:12.5px; padding:3px 0;
+  }
+  .order-foot{
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .order-total{font-size:15px; font-weight:800;}
+  .order-actions{display:flex; gap:8px; align-items:center;}
+  .status-select{
+    padding:8px 10px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:12.5px; background:#fff; color:var(--ink); outline:none;
+  }
+  .delete-btn{
+    background:none; border:none; color:var(--coral); cursor:pointer; padding:6px;
+  }
+  .delete-btn svg{width:18px; height:18px;}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:12px 22px; border-radius:999px;
+    font-size:13px; font-weight:700; opacity:0; pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease; z-index:50;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-logo">DV</div>
+      <h1>لوحة تحكم dr.vaper</h1>
+      <p>سجّل الدخول لعرض الطلبات الواردة</p>
+      <form id="login-form">
+        <div class="login-field">
+          <label for="admin-password">كلمة المرور</label>
+          <input type="password" id="admin-password" autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <div class="login-error" id="login-error">كلمة المرور غير صحيحة</div>
+        <button type="submit" class="login-btn" id="login-btn">دخول</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="dashboard">
+    <div class="admin-top">
+      <h1>لوحة التحكم — الطلبات</h1>
+      <div class="admin-top-actions">
+        <button class="top-btn" onclick="loadOrders()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          تحديث
+        </button>
+        <button class="top-btn" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+          خروج
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-wrap">
+      <div class="summary-grid">
+        <div class="summary-card"><div class="v" id="s-count">0</div><div class="l">إجمالي الطلبات</div></div>
+        <div class="summary-card"><div class="v" id="s-new">0</div><div class="l">طلبات جديدة</div></div>
+        <div class="summary-card"><div class="v" id="s-revenue">0.00</div><div class="l">إجمالي المبيعات (ر.س)</div></div>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="search-box" placeholder="ابحث بالاسم أو الجوال أو المدينة..." oninput="renderOrders()">
+        <select id="status-filter" onchange="renderOrders()">
+          <option value="">كل الحالات</option>
+          <option value="جديد">جديد</option>
+          <option value="قيد التنفيذ">قيد التنفيذ</option>
+          <option value="تم التوصيل">تم التوصيل</option>
+          <option value="ملغي">ملغي</option>
+        </select>
+      </div>
+
+      <div class="order-list" id="order-list">
+        <div class="empty-state"><span>جارِ التحميل...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  var TOKEN_KEY = 'dv_admin_token';
+  var allOrders = [];
+
+  function toast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function getToken(){ return localStorage.getItem(TOKEN_KEY); }
+  function setToken(t){ localStorage.setItem(TOKEN_KEY, t); }
+  function clearToken(){ localStorage.removeItem(TOKEN_KEY); }
+
+  function showDashboard(){
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'flex';
+    loadOrders();
+  }
+  function showLogin(){
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+
+  document.getElementById('login-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var password = document.getElementById('admin-password').value;
+    var btn = document.getElementById('login-btn');
+    var errEl = document.getElementById('login-error');
+    errEl.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'جارِ الدخول...';
+
+    fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password })
+    })
+      .then(function(res){
+        if (!res.ok) { throw new Error('bad_login'); }
+        return res.json();
+      })
+      .then(function(data){
+        setToken(data.token);
+        showDashboard();
+      })
+      .catch(function(){
+        errEl.style.display = 'block';
+      })
+      .finally(function(){
+        btn.disabled = false; btn.textContent = 'دخول';
+      });
+  });
+
+  function logout(){
+    var token = getToken();
+    clearToken();
+    if (token){
+      fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+      }).catch(function(){});
+    }
+    showLogin();
+  }
+
+  function authHeaders(){
+    return { 'Authorization': 'Bearer ' + getToken() };
+  }
+
+  function loadOrders(){
+    var listEl = document.getElementById('order-list');
+    listEl.innerHTML = '<div class="empty-state"><span>جارِ التحميل...</span></div>';
+    fetch('/api/orders', { headers: authHeaders() })
+      .then(function(res){
+        if (res.status === 401){ clearToken(); showLogin(); throw new Error('unauthorized'); }
+        if (!res.ok){ throw new Error('failed'); }
+        return res.json();
+      })
+      .then(function(data){
+        var orders = data.orders || [];
+        allOrders = orders.map(function(o, idx){
+          o.displayNo = orders.length - idx;
+          return o;
+        });
+        renderOrders();
+      })
+      .catch(function(){
+        listEl.innerHTML = '<div class="empty-state"><span>تعذّر تحميل الطلبات، حاول التحديث مرة أخرى.</span></div>';
+      });
+  }
+
+  function statusClass(status){
+    if (status === 'جديد') return 'new';
+    if (status === 'قيد التنفيذ') return 'processing';
+    if (status === 'تم التوصيل') return 'delivered';
+    if (status === 'ملغي') return 'cancelled';
+    return '';
+  }
+
+  function renderOrders(){
+    var q = document.getElementById('search-box').value.trim().toLowerCase();
+    var statusF = document.getElementById('status-filter').value;
+
+    var filtered = allOrders.filter(function(o){
+      var matchesQ = !q || (o.name || '').toLowerCase().indexOf(q) !== -1 ||
+        (o.phone || '').indexOf(q) !== -1 || (o.city || '').toLowerCase().indexOf(q) !== -1;
+      var matchesStatus = !statusF || o.status === statusF;
+      return matchesQ && matchesStatus;
+    });
+
+    document.getElementById('s-count').textContent = allOrders.length;
+    document.getElementById('s-new').textContent = allOrders.filter(function(o){ return o.status === 'جديد'; }).length;
+    var revenue = allOrders.reduce(function(sum, o){ return sum + (o.total || 0); }, 0);
+    document.getElementById('s-revenue').textContent = revenue.toFixed(2);
+
+    var listEl = document.getElementById('order-list');
+    if (filtered.length === 0){
+      listEl.innerHTML = '<div class="empty-state">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>' +
+        '<span>لا توجد طلبات مطابقة</span></div>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function(o){
+      var dateStr = '';
+      try { dateStr = new Date(o.createdAt).toLocaleString('ar-SA'); } catch(e){ dateStr = o.createdAt || ''; }
+      var itemsHtml = (o.items || []).map(function(it){
+        return '<div class="item-line"><span>' + escapeHtml(it.name) + ' × ' + it.qty + '</span><span>' + (it.price * it.qty).toFixed(2) + ' ر.س</span></div>';
+      }).join('');
+
+      html += '<div class="order-card">' +
+        '<div class="order-card-head">' +
+          '<span class="order-id">طلب #' + o.displayNo + '</span>' +
+          '<span class="status-badge ' + statusClass(o.status) + '">' + o.status + '</span>' +
+          '<span class="order-date">' + dateStr + '</span>' +
+        '</div>' +
+        '<div class="order-body">' +
+          '<div class="info-row"><span class="k">الاسم:</span><span class="v">' + escapeHtml(o.name) + '</span></div>' +
+          '<div class="info-row"><span class="k">الجوال:</span><span class="v" dir="ltr">+' + escapeHtml(o.phone) + '</span></div>' +
+          '<div class="info-row"><span class="k">البريد:</span><span class="v" dir="ltr">' + escapeHtml(o.email) + '</span></div>' +
+          '<div class="info-row"><span class="k">المنطقة/المدينة:</span><span class="v">' + escapeHtml([o.region, o.city].filter(Boolean).join(' — ')) + '</span></div>' +
+          '<div class="info-row" style="grid-column:1/-1;"><span class="k">العنوان:</span><span class="v">' + escapeHtml([o.district, o.address].filter(Boolean).join('، ')) + '</span></div>' +
+        '</div>' +
+        '<div class="order-items">' + itemsHtml + '</div>' +
+        '<div class="order-foot">' +
+          '<span class="order-total">الإجمالي: ' + (o.total || 0).toFixed(2) + ' ر.س</span>' +
+          '<div class="order-actions">' +
+            '<select class="status-select" onchange="updateStatus(\'' + o.id + '\', this.value)">' +
+              ['جديد','قيد التنفيذ','تم التوصيل','ملغي'].map(function(s){
+                return '<option value="' + s + '"' + (s === o.status ? ' selected' : '') + '>' + s + '</option>';
+              }).join('') +
+            '</select>' +
+            '<button class="delete-btn" onclick="deleteOrder(\'' + o.id + '\')" aria-label="حذف">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    });
+    listEl.innerHTML = html;
+  }
+
+  function escapeHtml(str){
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function updateStatus(id, status){
+    fetch('/api/orders/' + id, {
+      method: 'PATCH',
+      headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+      body: JSON.stringify({ status: status })
+    })
+      .then(function(res){
+        if (res.status === 401){ clearToken(); showLogin(); throw new Error('unauthorized'); }
+        if (!res.ok){ throw new Error('failed'); }
+        return res.json();
+      })
+      .then(function(){
+        toast('تم تحديث حالة الطلب');
+        var o = allOrders.find(function(x){ return x.id === id; });
+        if (o) o.status = status;
+        renderOrders();
+      })
+      .catch(function(){ toast('تعذّر تحديث الحالة'); });
+  }
+
+  function deleteOrder(id){
+    if (!confirm('هل تريد حذف هذا الطلب نهائيًا؟')) return;
+    fetch('/api/orders/' + id, {
+      method: 'DELETE',
+      headers: authHeaders()
+    })
+      .then(function(res){
+        if (res.status === 401){ clearToken(); showLogin(); throw new Error('unauthorized'); }
+        if (!res.ok){ throw new Error('failed'); }
+        return res.json();
+      })
+      .then(function(){
+        toast('تم حذف الطلب');
+        allOrders = allOrders.filter(function(o){ return o.id !== id; });
+        renderOrders();
+      })
+      .catch(function(){ toast('تعذّر حذف الطلب'); });
+  }
+
+  /* auto-login if a token is already stored */
+  if (getToken()){
+    showDashboard();
+  } else {
+    showLogin();
+  }
+</script>
+</body>
+</html>
